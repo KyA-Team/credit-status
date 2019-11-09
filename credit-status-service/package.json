@@ -1,0 +1,18 @@
+{
+  "name": "experimenting-app",
+  "version": "1.0.0",
+  "description": "App for experimenting things",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "DEBUG=* node src/bin/www",
+    "dev": "DEBUG=* nodemon --watch . -L src/bin/www"
+  },
+  "author": "Agustin Lema",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongodb": "^3.3.3",
+    "nodemon": "^1.19.4"
+  }
+}
