@@ -14,8 +14,6 @@ services:
     #user: "node"
     restart: always
     working_dir: /home/node/app
-    environment:
-      - NODE_ENV=dev
     volumes:
       - ./credit-status-service/:/home/node/app
       - /home/node/app/node_modules
@@ -23,6 +21,7 @@ services:
       - 3000:3000
     command: bash -c "npm install && npm run dev"
     environment:
+      NODE_ENV: dev
       DB_HOST: mongo
       #MONGO_SRV: 'true'
       MONGO_USER: root
@@ -37,8 +36,6 @@ services:
     #user: "node"
     restart: always
     working_dir: /home/node/app
-    environment:
-      - NODE_ENV=dev
     volumes:
       - ./quota-service/:/home/node/app
       - /home/node/app/node_modules
@@ -46,6 +43,7 @@ services:
       - 3001:3000
     command: bash -c "npm install && npm run dev"
     environment:
+      NODE_ENV: dev
       DB_HOST: mongo
       #MONGO_SRV: 'true'
       MONGO_USER: root
