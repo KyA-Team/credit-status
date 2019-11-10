@@ -17,7 +17,6 @@ class urlBuilder {
     }
 
     withSRV(isSRV) {
-        console.debug("is srv",isSRV)
         this.protocol = isSRV ? 'mongodb+srv' : 'mongodb'
         this.isSRV = isSRV
         return this
