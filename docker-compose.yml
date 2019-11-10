@@ -27,7 +27,7 @@ services:
       MONGO_USER: root
       MONGO_PASSWORD: example
       QUOTA_HOST: quota-service
-      QUOTA_POST: 3001
+      QUOTA_PORT: 3000
     depends_on:
       - "mongo"
 
