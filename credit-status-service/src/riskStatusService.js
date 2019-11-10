@@ -14,4 +14,4 @@ async function findDocumentByIDs(dbClient, ids, callback) {
             $in: ids
         }}).toArray();
 }
-module.exports = {getCreditStatus};
+module.exports = { getCreditStatus };

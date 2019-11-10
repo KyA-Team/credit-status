@@ -1,4 +1,6 @@
-var parseKey = function (req, res, next) {
+const userAPI = require('./userAPI');
+
+const parseKey = function (req, res, next) {
     if(!req.headers.authorization) {
         return res
           .status(403)
@@ -8,9 +10,9 @@ var parseKey = function (req, res, next) {
     next()
 }
 
-var requestQuota = function(required_quota, res) {
-    var key = res.locals.key
-    var available = { 'limit10': 10, 'limit2': 2, 'limit0': 0, 'limit1': 1 }[key] || 0 //TODO: Add logic to contact remote service and check quota
+const hasQuota = async function(required_quota, res) {
+    var key = res.locals.key;
+    var available = await userAPI.getAvailableQuota(key);
     if (required_quota > available) {
         res
           .status(403)
@@ -24,4 +26,4 @@ var requestQuota = function(required_quota, res) {
 }
 
 
-module.exports = { parseKey, requestQuota }
+module.exports = { parseKey, hasQuota }
