@@ -16,7 +16,7 @@ app.get('/riskStatus', function (req, res){
     res.status(400).send('You need to add a CUIL for this to work')
 })
 
-app.post('/riskStatus/multipleQuery', authentication.parseKey,  function (req, res){
+app.post('/riskStatus/multipleQuery', authentication.parseKey,  async function (req, res){
     const ids = req.body;
     if ( !Array.isArray(ids) ){
         res.status(400).json({status: "Invalid request"})
@@ -24,7 +24,8 @@ app.post('/riskStatus/multipleQuery', authentication.parseKey,  function (req, r
     }
 
     //TODO: Don't send the ids length, remove duplicates first
-    if ( !authentication.requestQuota(ids.length,res)){
+    const hasQuota = await authentication.hasQuota(ids.length,res);
+    if ( !hasQuota ){
         return
     }
 
@@ -35,7 +36,7 @@ app.post('/riskStatus/multipleQuery', authentication.parseKey,  function (req, r
             res.status(404).json([])
         }
     }).catch(reason => { res.status(500).json({}); throw reason });
-})
+});
 
 app.get('/riskStatus/:id(\\d+)', authentication.parseKey, function (req, res){
     let id = req.params['id']

@@ -1,22 +1,20 @@
 {
-  "name": "credit-status",
+  "name": "quota-service",
   "version": "1.0.0",
-  "description": "App for getting client's credit status",
+  "description": "",
   "main": "src/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "DEBUG=* node src/bin/www",
     "dev": "DEBUG=* nodemon --watch . -L src/bin/www"
   },
-  "author": "Agustin Lema",
+  "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "mongodb": "^3.3.3",
-    "nodemon": "^1.19.4",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.5"
+    "nodemon": "^1.19.4"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
