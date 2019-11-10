@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+
+  credit-status-service-test:
+    image: "node"
+    restart: "no"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=dev
+    volumes:
+      - ./credit-status-service/:/home/node/app
+      - /home/node/app/node_modules
+    command: bash -c "npm install && npm run test"
+
+  quota-service-test:
+    image: "node"
+    #user: "node"
+    restart: "no"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=dev
+    volumes:
+      - ./quota-service/:/home/node/app
+      - /home/node/app/node_modules
+    command: bash -c "npm install && npm run test"
