@@ -1,26 +1,19 @@
 const express = require('express');
+
 const app = express();
 const bodyParser = require('body-parser');
-const router = express.Router();
-const userController = require('./userController');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const userRoutes = require('./modules/user/userRoutes');
+const AppError = require('./utils/appError');
 
 app.use(bodyParser.json());
+app.use(mongoSanitize());
+app.use(xss());
 
-app.get('/', (req, res) => res.send('Nothing goes here'))
-
-app.get('/limit', userController.getLimit);
-app.get('/available-quota/:key', userController.getAvailableQuota);
-app.get('/bla', (req, res) => res.send('Nothing goes heree'));
-
-
-
-app.use(function(req, res, next){
-  res.status(404).send('The page you are looking for does not exist');
-});
-
-app.use(function(err, req, res, next){
-  console.error(err.stack);
-  res.status(500).send('Oh no, the app just had an error!');
+app.use('/api', userRoutes);
+app.all('*', (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
 module.exports = app;
