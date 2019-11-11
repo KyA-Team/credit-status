@@ -4,54 +4,51 @@ const config = require('../../utils/config');
 const { getTimeDiff } = require('../../utils/helpers');
 
 class UserService {
-  getCollection() {
-    return client.db(config.dbName).collection(config.collectionName);
-  }
+  getCollection = () => client.db(config.dbName).collection(config.collectionName);
 
-  resetLimitQuota(key) {
+  resetLimitQuota = async (key) => {
     this.getCollection().updateOne({ key }, {
       $set: {
         consumedQuota: 0,
         lastReset: Date.now(),
       },
     });
-  }
+  };
 
-  async setLimitQuota(key, newLimit) {
+  setQuotaLimit = async (key, newLimit) => {
     const { result } = await this.getCollection().updateOne({ key }, {
       $set: {
         quotaLimit: newLimit,
       },
     });
     return _.isEqual(result.nModified, 1);
-  }
+  };
 
-  async getLimitQuota(key) {
+  getQuotaLimit = async (key) => {
     const { quotaLimit } = await this.getCollection().findOne({ key });
     return quotaLimit;
-  }
+  };
 
-  async getAvailableQuota(key) {
+  getAvailableQuota = async (key) => {
     const data = await this.getCollection().findOne({ key });
     const { quotaLimit, consumedQuota, lastReset } = data;
     const timeDiff = getTimeDiff(Date.now(), lastReset);
     if (timeDiff >= 1) {
-      this.resetLimitQuota(key);
+      await this.resetLimitQuota(key);
       return quotaLimit;
     }
 
     return quotaLimit - consumedQuota;
-  }
+  };
 
-  async consumeQuota(key, consumed) {
-    const { consumedQuota = 0 } = await this.getCollection().findOne({ key });
+  consumeQuota = async (key, consumed) => {
     const { result } = await this.getCollection().updateOne({ key }, {
-      $set: {
-        consumedQuota: consumedQuota + consumed,
+      $inc: {
+        consumedQuota: consumed,
       },
     });
     return _.isEqual(result.nModified, 1);
-  }
+  };
 }
 
 module.exports = new UserService();
