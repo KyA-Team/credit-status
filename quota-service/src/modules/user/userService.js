@@ -9,7 +9,7 @@ class UserService {
   }
 
   resetLimitQuota(key) {
-    this.getCollection().update({ key }, {
+    this.getCollection().updateOne({ key }, {
       $set: {
         consumedQuota: 0,
         lastReset: Date.now(),
@@ -34,7 +34,8 @@ class UserService {
   async getAvailableQuota(key) {
     const data = await this.getCollection().findOne({ key });
     const { quotaLimit, consumedQuota, lastReset } = data;
-    if (getTimeDiff(Date.now(), lastReset) >= 1) {
+    const timeDiff = getTimeDiff(Date.now(), lastReset);
+    if (timeDiff >= 1) {
       this.resetLimitQuota(key);
       return quotaLimit;
     }
@@ -43,9 +44,10 @@ class UserService {
   }
 
   async consumeQuota(key, consumed) {
+    const { consumedQuota = 0 } = await this.getCollection().findOne({ key });
     const { result } = await this.getCollection().updateOne({ key }, {
       $set: {
-        consumedQuota: consumed,
+        consumedQuota: consumedQuota + consumed,
       },
     });
     return _.isEqual(result.nModified, 1);
