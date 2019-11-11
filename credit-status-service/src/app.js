@@ -9,17 +9,17 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => res.send('Nothing goes here'));
 
-app.get('/creditStatus/multipleQuery', (req, res) => {
+app.get('/credit-status/multiple-query', (req, res) => {
   res.status(400).send('You should be using POST');
 });
 
-app.get('/creditStatus', (req, res) => {
+app.get('/credit-status', (req, res) => {
   res.status(400).send('You need to add a CUIL for this to work');
 });
 
-app.post('/creditStatus/multipleQuery', authentication.parseKey, creditStatusController.multipleQuery);
+app.post('/credit-status/multiple-query', authentication.parseKey, creditStatusController.multipleQuery);
 
-app.get('/creditStatus/:id(\\d+)', authentication.parseKey, creditStatusController.singleQuery);
+app.get('/credit-status/:id(\\d+)', authentication.parseKey, creditStatusController.singleQuery);
 
 app.get('/break', () => {
   throw new Error('Forced error for testing');

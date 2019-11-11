@@ -10,16 +10,18 @@ const app = require('../src/app');
 chai.use(chaiHttp);
 chai.should();
 
+const valid_token = '44444'
+const valid_ids = [ 35366634, 94779065 ]
+const [valid_id] = valid_ids;
+const exhausted_token = '00000'
+
 
 describe('credit-status single', () => {
-  describe('GET /creditStatus', () => {
+  describe('GET /credit-status', () => {
     it('should get credit status for a single CUIT', (done) => {
-      
-      const id = 35366634;
-      const token = 'limit10';
       chai.request(app)
-        .get(`/creditStatus/${id}`)
-        .set('Authorization', `bearer ${token}`)
+        .get(`/credit-status/${valid_id}`)
+        .set('Authorization', `bearer ${valid_token}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('array');
@@ -29,9 +31,8 @@ describe('credit-status single', () => {
     });
 
     it('should not get credit status without an api key', (done) => {
-      const id = 35366634;
       chai.request(app)
-        .get(`/creditStatus/${id}`)
+        .get(`/credit-status/${valid_id}`)
         .end((err, res) => {
           res.should.have.status(401);
           done();
@@ -39,10 +40,9 @@ describe('credit-status single', () => {
     });
 
     it('should not get credit status with invalid api key', (done) => {
-      const id = 35366634;
       const token = 'non-existent-token';
       chai.request(app)
-        .get(`/creditStatus/${id}`)
+        .get(`/credit-status/${valid_id}`)
         .set('Authorization', `bearer ${token}`)
         .end((err, res) => {
           res.should.have.status(403);
@@ -51,11 +51,9 @@ describe('credit-status single', () => {
     });
 
     it('should not get credit status with exhausted api key', (done) => {
-      const id = 35366634;
-      const token = 'limit0';
       chai.request(app)
-        .get(`/creditStatus/${id}`)
-        .set('Authorization', `bearer ${token}`)
+        .get(`/credit-status/${valid_id}`)
+        .set('Authorization', `bearer ${exhausted_token}`)
         .end((err, res) => {
           res.should.have.status(403);
           done();
@@ -65,7 +63,7 @@ describe('credit-status single', () => {
     it('should not get credit status for non existent CUIT', (done) => {
       const id = -1;
       chai.request(app)
-        .get(`/creditStatus/${id}`)
+        .get(`/credit-status/${id}`)
         .end((err, res) => {
           res.should.have.status(404);
           done();
@@ -76,15 +74,12 @@ describe('credit-status single', () => {
 
 
 describe('credit-status multiple', () => {
-  describe('GET /creditStatus/multipleQuery', () => {
+  describe('GET /credit-status/multiple-query', () => {
     it('should get credit status for multiple CUITs', (done) => {
-      
-      const ids = [ 35366634, 94779065 ];
-      const token = 'limit10';
-      chai.request(app)
-        .post(`/creditStatus/multipleQuery`)
-        .set('Authorization', `bearer ${token}`)
-        .send(ids)
+        chai.request(app)
+        .post(`/credit-status/multiple-query`)
+        .set('Authorization', `bearer ${valid_token}`)
+        .send(valid_ids)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('array');
@@ -94,10 +89,9 @@ describe('credit-status multiple', () => {
     });
 
     it('should not get credit status without an api key', (done) => {
-      const ids = [ 35366634, 94779065 ];
       chai.request(app)
-        .post(`/creditStatus/multipleQuery`)
-        .send(ids)
+        .post(`/credit-status/multiple-query`)
+        .send(valid_ids)
         .end((err, res) => {
           res.should.have.status(401);
           done();
@@ -105,12 +99,11 @@ describe('credit-status multiple', () => {
     });
 
     it('should not get credit status with invalid api key', (done) => {
-      const ids = [ 35366634, 94779065 ];
       const token = 'non-existent-token';
       chai.request(app)
-        .post(`/creditStatus/multipleQuery`)
+        .post(`/credit-status/multiple-query`)
         .set('Authorization', `bearer ${token}`)
-        .send(ids)
+        .send(valid_ids)
         .end((err, res) => {
           res.should.have.status(403);
           done();
@@ -118,12 +111,11 @@ describe('credit-status multiple', () => {
     });
 
     it('should not get credit status with exhausted api key', (done) => {
-      const ids = [ 35366634, 94779065 ];
       const token = 'limit0';
       chai.request(app)
-        .post(`/creditStatus/multipleQuery`)
-        .set('Authorization', `bearer ${token}`)
-        .send(ids)
+        .post(`/credit-status/multiple-query`)
+        .set('Authorization', `bearer ${exhausted_token}`)
+        .send(valid_ids)
         .end((err, res) => {
           res.should.have.status(403);
           done();
@@ -132,7 +124,7 @@ describe('credit-status multiple', () => {
 
     it('should not get credit status without body in post', (done) => {
       chai.request(app)
-        .get(`/creditStatus/multipleQuery`)
+        .get(`/credit-status/multiple-query`)
         .end((err, res) => {
           res.should.have.status(400);
           done();
@@ -140,10 +132,9 @@ describe('credit-status multiple', () => {
     });
 
     it('should return error if body has wrong format', (done) => {
-      const token = 'limit10';
       chai.request(app)
-        .get(`/creditStatus/multipleQuery`)
-        .set('Authorization', `bearer ${token}`)
+        .get(`/credit-status/multiple-query`)
+        .set('Authorization', `bearer ${valid_token}`)
         .send("wrongFormat")
         .end((err, res) => {
           res.should.have.status(400);
@@ -153,10 +144,9 @@ describe('credit-status multiple', () => {
 
     it('should get 404 for credit status for non existant CUITs', (done) => {
       const ids = [ -1, -2 ];
-      const token = 'limit10';
       chai.request(app)
-        .post(`/creditStatus/multipleQuery`)
-        .set('Authorization', `bearer ${token}`)
+        .post(`/credit-status/multiple-query`)
+        .set('Authorization', `bearer ${valid_token}`)
         .send(ids)
         .end((err, res) => {
           res.should.have.status(404);
@@ -181,9 +171,9 @@ describe('non-functional endpoints', () => {
         });
     });
 
-    it('Should return 400 in creditStatus/multipleQuery', (done) => {
+    it('Should return 400 in credit-status/multiple-query', (done) => {
       chai.request(app)
-        .get('/creditStatus/multipleQuery')
+        .get('/credit-status/multiple-query')
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -191,9 +181,9 @@ describe('non-functional endpoints', () => {
         });
     });
 
-    it('Should return 400 in /creditStatus with no CUIT', (done) => {
+    it('Should return 400 in /credit-status with no CUIT', (done) => {
       chai.request(app)
-        .get('/creditStatus')
+        .get('/credit-status')
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
