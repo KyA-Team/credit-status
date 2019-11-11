@@ -5,7 +5,7 @@ const config = require('./config');
 const getAvailableQuota = async (key) => {
   const { host } = config.quotaService;
   const { port } = config.quotaService;
-  const uri = `http://${host}:${port}/available-quota/${key}`;
+  const uri = `http://${host}:${port}/api/available-quota/${key}`;
   const options = {
     uri,
     json: true,

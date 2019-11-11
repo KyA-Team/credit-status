@@ -1,70 +1,71 @@
-const MongoClient = require('mongodb').MongoClient;
-const config = require('./config')
+const { MongoClient } = require('mongodb');
+const config = require('./utils/config');
+const userModel = require('./modules/user/userModel');
 
-class urlBuilder {
-    constructor(host, port) {
-        this.host = host;
-        this.port = port;
-        this.protocol = 'mongodb'
-    }
+class UrlBuilder {
+  constructor(host, port) {
+    this.host = host;
+    this.port = port;
+    this.protocol = 'mongodb';
+  }
 
-    withAuth(user, pass) {
-        if (user && pass) {
-            this.user = encodeURIComponent(user)
-            this.pass = encodeURIComponent(pass)
-        }
-        return this
+  withAuth(user, pass) {
+    if (user && pass) {
+      this.user = encodeURIComponent(user);
+      this.pass = encodeURIComponent(pass);
     }
+    return this;
+  }
 
-    withSRV(isSRV) {
-        this.protocol = isSRV ? 'mongodb+srv' : 'mongodb'
-        this.isSRV = isSRV
-        return this
-    }
+  withSRV(isSRV) {
+    this.protocol = isSRV ? 'mongodb+srv' : 'mongodb';
+    this.isSRV = isSRV;
+    return this;
+  }
 
-    build() {
-        let url_array = [ this.protocol, "://" ]
-        if (this.user) {
-            url_array.push(this.user, ":", this.pass, "@")
-        }
-        url_array.push(this.host)
-        if (!this.isSRV) {
-            url_array.push(":", this.port)
-        }
-        const url = url_array.join('')
-        console.debug("Connection string generated for mongo: " + url.replace(this.pass, '###'))
-        return url
+  build() {
+    const urlArray = [this.protocol, '://'];
+    if (this.user) {
+      urlArray.push(this.user, ':', this.pass, '@');
     }
+    urlArray.push(this.host);
+    if (!this.isSRV) {
+      urlArray.push(':', this.port);
+    }
+    const url = urlArray.join('');
+    console.debug(`Connection string generated for mongo: ${url.replace(this.pass, '###')}`); // eslint-disable-line no-console
+    return url;
+  }
 }
 
 // Connection URL
-const url = new urlBuilder(config.host, config.port)
-                .withSRV(config.isSRV)
-                .withAuth(config.user, config.password)
-                .build()
+const url = new UrlBuilder(config.host, config.port)
+  .withSRV(config.isSRV)
+  .withAuth(config.user, config.password)
+  .build();
 
-const client = new MongoClient(url)
-const connection = client.connect() // initialized connection
-var db
+const client = new MongoClient(url);
+const connection = client.connect(); // initialized connection
+let db;
 
 
-connection.then(() => {
-    console.debug("Connected")
-    const docs = [ 
-        { _id: 1254, creditStatus: 2 },
-        { _id: 94779065, creditStatus: 1 },
-        { _id: 35366634, creditStatus: 3 }]
-    db = client.db(config.dbName)
+connection.then(async () => {
+  const docs = [
+    userModel.create('11111', 10),
+    userModel.create('22222', 100),
+    userModel.create('33333', 50),
+    userModel.create('44444', 500),
+  ];
+  db = client.db(config.dbName);
 
-    const coll = db.collection(config.collectionName)
-    for (let doc of docs) {
-        coll.insertOne(doc, upsert=true, (err, result) => {
-            if(err) console.error("Trying to insert entry that already exists");//throw err
-            console.debug("Document inserted ",doc)
-        })
-    }
-    console.debug("DB mock data loaded")
-})
+  const coll = db.collection(config.collectionName);
+  for (const doc of docs) {
+    coll.insertOne(doc, { upsert: true }, (err, result) => {
+      if (err) console.error('Trying to insert entry that already exists');// throw err
+      console.debug('Document inserted', doc, `with result ${result}`); // eslint-disable-line no-console
+    });
+  }
+  console.debug('DB mock data loaded'); // eslint-disable-line no-console
+});
 
 module.exports = client;
-

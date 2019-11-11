@@ -5,6 +5,7 @@
   "author": "Agustin Lema",
   "license": "ISC",
   "devDependencies": {
+    "babel-eslint": "^10.0.3",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-airbnb-base": "^14.0.0",
