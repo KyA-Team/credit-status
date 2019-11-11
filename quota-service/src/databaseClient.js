@@ -60,7 +60,6 @@ connection.then(async () => {
   db = client.db(config.dbName);
 
   const coll = db.collection(config.collectionName);
-  coll.drop({});
   for (const doc of docs) {
     coll.insertOne(doc, { upsert: true }, (err, result) => {
       if (err) console.error('Trying to insert entry that already exists');// throw err
@@ -68,7 +67,6 @@ connection.then(async () => {
     });
   }
   console.debug('DB mock data loaded'); // eslint-disable-line no-console
-  console.debug('current documents:', await coll.countDocuments())
 });
 
 module.exports = client;

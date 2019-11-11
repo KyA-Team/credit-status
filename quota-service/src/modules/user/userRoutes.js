@@ -10,10 +10,10 @@ router
 router
   .route('/quota-limit/:key')
   .get(userController.getQuotaLimit)
-  .post(userController.setQuotaLimit);
+  .put(userController.setQuotaLimit);
 
 router
   .route('/consume-quota/:key')
-  .post(userController.consumeCuota);
+  .put(userController.consumeCuota);
 
 module.exports = router;
