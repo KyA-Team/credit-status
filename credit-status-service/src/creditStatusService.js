@@ -1,8 +1,8 @@
-const dbClient = require('./databaseClient');
+const dbClient = require('./database/databaseClient');
 const config = require('./config');
 
 async function findDocumentByIDs(client, ids) {
-  const db = client.db(config.dbName);
+  const db = await dbClient.getDBConnection(config.dbName);
   // Get the documents collection
   const collection = db.collection(config.collectionName);
   // Find some documents
