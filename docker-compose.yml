@@ -5,6 +5,8 @@ services:
   mongo:
     image: mongo
     restart: always
+    ports:
+      - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
@@ -27,7 +29,6 @@ services:
       MONGO_USER: root
       MONGO_PASSWORD: example
       QUOTA_HOST: quota-service
-      QUOTA_PORT: 3000
     depends_on:
       - "mongo"
 

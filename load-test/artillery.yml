@@ -1,16 +1,16 @@
 config:
-  target: 'http://credit-status-lb-2109520046.us-east-1.elb.amazonaws.com'
-  #target: 'http://localhost:3000'
+  #target: 'http://credit-status-lb-2109520046.us-east-1.elb.amazonaws.com'
+  target: 'http://localhost:3000'
   phases:
-    - duration: 8
-      arrivalRate: 80
+    - duration: 5
+      arrivalRate: 100
   defaults:
     headers:
       Authorization: 'bearer limit10'
 scenarios:
   - flow:
     - post:
-        url: "/riskstatus/multipleQuery"
+        url: "/creditStatus/multipleQuery"
         json: 
           - 35366634
           - 94779065

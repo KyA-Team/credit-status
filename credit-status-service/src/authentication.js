@@ -3,7 +3,7 @@ const userAPI = require('./userAPI');
 const parseKey = function (req, res, next) {
   if (!req.headers.authorization) {
     return res
-      .status(403)
+      .status(401)
       .json({ status: 'Auth key missing in header' });
   }
   [, res.locals.key] = req.headers.authorization.split(' ');
