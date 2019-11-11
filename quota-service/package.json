@@ -5,7 +5,7 @@
   "main": "src/app.js",
   "scripts": {
     "coverage": "./node_modules/.bin/nyc npm run test",
-    "test": "./node_modules/.bin/mocha --reporter spec --exit",
+    "test": "./node_modules/.bin/mocha --reporter spec --exit --require @babel/register",
     "lint": "./node_modules/.bin/eslint \"**/*.js\" --ignore-pattern node_modules/",
     "start": "DEBUG=* node src/bin/www",
     "dev": "DEBUG=* nodemon --watch . -L src/bin/www"
@@ -23,9 +23,12 @@
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/register": "^7.7.0",
+    "babel-eslint": "^10.0.3",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
-    "babel-eslint": "^10.0.3",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-airbnb-base": "^14.0.0",
