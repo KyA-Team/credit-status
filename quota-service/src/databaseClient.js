@@ -51,6 +51,7 @@ let db;
 
 connection.then(async () => {
   const docs = [
+    userModel.create('00000', 0),
     userModel.create('11111', 10),
     userModel.create('22222', 100),
     userModel.create('33333', 50),

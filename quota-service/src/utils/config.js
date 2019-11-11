@@ -1,7 +1,7 @@
 const config = {
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || '27017',
-  dbName: process.env.DB_NAME || 'riskStatusDB',
+  dbName: process.env.DB_NAME || 'creditStatusDB',
   collectionName: process.env.DB_NAME || 'users',
   user: process.env.MONGO_USER,
   password: process.env.MONGO_PASSWORD,
