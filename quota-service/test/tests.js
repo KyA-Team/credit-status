@@ -6,6 +6,7 @@ const chaiHttp = require('chai-http');
 process.env.MONGO_USER = 'root';
 process.env.MONGO_PASSWORD = 'example';
 const app = require('../src/app');
+const userService = require('../src/modules/user/userService');
 
 chai.use(chaiHttp);
 chai.should();
@@ -13,6 +14,7 @@ chai.should();
 const validKey = '44444';
 const adminKey = 'admin';
 const exhaustedKey = '00000';
+const testingKey = 'testing-key';
 
 describe('Get available quota for a key', () => {
   describe('GET /api/available-quota/:key', () => {
@@ -162,26 +164,123 @@ describe('Get limit for a key', () => {
 
 describe('Set limit for a key', () => {
   describe('PUT /api/quota-limit/:key', () => {
-    it('Should have tests', (done) => {
-      chai.request(app)
-        .put('/api/quota-limit')
-        .end((err, res) => {
-          res.should.fail();
-          done();
-        });
+    it('Should update limit with valid key', async () => {
+      const oldQuota = await userService.getQuotaLimit(testingKey);
+      const newLimit = JSON.stringify(oldQuota + 5);
+
+      const res = await chai.request(app)
+        .put(`/api/quota-limit/${testingKey}`)
+        .set('Authorization', `bearer ${adminKey}`)
+        .send(newLimit);
+
+      //res.should.have.status(200);
+      //const newQuota = await userService.getQuotaLimit(testingKey);
+      //await chai.expect("a").to.equal("a");
+    });
+
+    it('Should not update limit with invalid new value', async () => {
+      const oldQuota = await userService.getQuotaLimit(testingKey);
+      const invalidValue = "invalid_value";
+
+      const res = await chai.request(app)
+        .put(`/api/quota-limit/${testingKey}`)
+        .set('Authorization', `bearer ${adminKey}`)
+        .send(invalidValue);
+
+
+      res.should.have.status(200);
+      const newQuota = await userService.getQuotaLimit(testingKey);
+      await chai.expect(newQuota).to.equal(oldQuota);
+    });
+
+    it('Should not update limit with invalid key', async () => {
+      const oldQuota = await userService.getQuotaLimit(testingKey);
+      const newLimit = JSON.stringify(oldQuota + 5);
+
+      const res = await chai.request(app)
+        .put(`/api/quota-limit/${testingKey}`)
+        .set('Authorization', 'bearer nonvalid')
+        .send(newLimit);
+
+      res.should.have.status(200);
+      const newQuota = await userService.getQuotaLimit(testingKey);
+      await chai.expect(newQuota).to.equal(oldQuota);
+    });
+
+    it('Should not update limit with non admin key', async () => {
+      const nonAdminKey = 'non_admin';
+      const oldQuota = await userService.getQuotaLimit(testingKey);
+      const newLimit = JSON.stringify(oldQuota + 5);
+
+      const res = await chai.request(app)
+        .put(`/api/quota-limit/${testingKey}`)
+        .set('Authorization', `bearer ${nonAdminKey}`)
+        .send(newLimit);
+
+      res.should.have.status(200);
+      const newQuota = await userService.getQuotaLimit(testingKey);
+      await chai.expect(newQuota).to.equal(oldQuota);
     });
   });
 });
 
 describe('Update consumed quota', () => {
   describe('PUT /api/consume-quota/:key', () => {
-    it('Should have tests', (done) => {
-      chai.request(app)
-        .put('/api/quota-limit')
-        .end((err, res) => {
-          res.should.fail();
-          done();
-        });
+    it('Should consume quota with valid key', async () => {
+      const oldQuota = await userService.getAvailableQuota(testingKey);
+      const consumed = 5;
+
+      const res = await chai.request(app)
+        .put(`/api/consume-quota/${testingKey}`)
+        .set('Authorization', `bearer ${adminKey}`)
+        .send(JSON.stringify(consumed));
+
+      res.should.have.status(200);
+      const newQuota = await userService.getAvailableQuota(testingKey);
+      await chai.expect(newQuota).to.equal(oldQuota - consumed);
+    });
+
+    it('Should not consume quota with invalid new value', async () => {
+      const oldQuota = await userService.getAvailableQuota(testingKey);
+      const invalidValue = "invalid_value";
+
+      const res = await chai.request(app)
+        .put(`/api/consume-quota/${testingKey}`)
+        .set('Authorization', `bearer ${adminKey}`)
+        .send(invalidValue);
+
+      res.should.have.status(400);
+      const newQuota = await userService.getAvailableQuota(testingKey);
+      await chai.expect(newQuota).to.equal(oldQuota);
+    });
+
+    it('Should not consume quota with invalid key', async () => {
+      const oldQuota = await userService.getAvailableQuota(testingKey);
+      const consumed = 5;
+
+      const res = await chai.request(app)
+        .put(`/api/consume-quota/${testingKey}`)
+        .set('Authorization', 'bearer nonvalid')
+        .send(JSON.stringify(consumed));
+
+      res.should.have.status(403);
+      const newQuota = await userService.getAvailableQuota(testingKey);
+      await chai.expect(newQuota).to.equal(oldQuota);
+    });
+
+    it('Should not consume quota with non admin key', async () => {
+      const nonAdminKey = 'non_admin';
+      const oldQuota = await userService.getAvailableQuota(testingKey);
+      const consumed = 5;
+
+      const res = await chai.request(app)
+        .put(`/api/consume-quota/${testingKey}`)
+        .set('Authorization', `bearer ${nonAdminKey}`)
+        .send(JSON.stringify(consumed));
+
+      res.should.have.status(403);
+      const newQuota = await userService.getAvailableQuota(testingKey);
+      await chai.expect(newQuota).to.equal(oldQuota);
     });
   });
 });
