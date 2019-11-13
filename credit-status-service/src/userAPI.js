@@ -8,9 +8,10 @@ const getAvailableQuota = async (key) => {
   const uri = `http://${host}:${port}/api/available-quota/${key}`;
   const options = {
     uri,
+    simple: false,
     json: true,
     headers: {
-      Authorization: config.quotaService.adminKey,
+      Authorization: `bearer ${config.quotaService.adminKey}`,
     },
   };
   const response = await rq.get(options);
@@ -28,7 +29,7 @@ const consumeQuota = async (key, amount) => {
       consumed: amount,
     },
     headers: {
-      Authorization: '00000',
+      Authorization: `bearer ${config.quotaService.adminKey}`,
     },
   };
   const response = await rq.put(options);

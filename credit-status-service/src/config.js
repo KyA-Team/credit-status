@@ -9,7 +9,7 @@ const config = {
   quotaService: {
     host: process.env.QUOTA_HOST || 'localhost',
     port: process.env.QUOTA_PORT || 3000,
-    adminKey: process.env.QUOTA_ADMIN_KEY || 'adminKey',
+    adminKey: process.env.QUOTA_ADMIN_KEY || 'admin',
   },
 };
 
