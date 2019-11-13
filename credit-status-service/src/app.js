@@ -1,25 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser'); // Parse JSON in request body
-const creditStatusController = require('./creditStatusController');
+const creditStatusRouter = require('./modules/credit-status/creditStatusRouter');
 
 const app = express();
-const authentication = require('./authentication');
 
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => res.send('Nothing goes here'));
 
-app.get('/credit-status/multiple-query', (req, res) => {
-  res.status(400).send('You should be using POST');
-});
-
-app.get('/credit-status', (req, res) => {
-  res.status(400).send('You need to add a CUIL for this to work');
-});
-
-app.post('/credit-status/multiple-query', authentication.parseKey, creditStatusController.multipleQuery);
-
-app.get('/credit-status/:id(\\d+)', authentication.parseKey, creditStatusController.singleQuery);
+app.use('/api', creditStatusRouter);
 
 app.get('/break', () => {
   throw new Error('Forced error for testing');

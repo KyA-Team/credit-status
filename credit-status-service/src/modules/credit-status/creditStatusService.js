@@ -1,5 +1,5 @@
-const dbClient = require('./database/databaseClient');
-const config = require('./config');
+const dbClient = require('../../database/databaseClient');
+const config = require('../../config');
 
 async function findDocumentByIDs(client, ids) {
   const db = await dbClient.getDBConnection(config.dbName);

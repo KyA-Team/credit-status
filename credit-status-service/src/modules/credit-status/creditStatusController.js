@@ -1,5 +1,5 @@
 const creditStatusService = require('./creditStatusService');
-const authentication = require('./authentication');
+const authentication = require('../../authentication');
 
 
 const multipleQuery = async (req, res) => {
