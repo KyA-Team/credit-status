@@ -10,6 +10,9 @@ const config = {
     host: process.env.QUOTA_HOST || 'localhost',
     port: process.env.QUOTA_PORT || 3000,
   },
+  credentials: {
+    token: process.env.ADMIN_TOKEN || 'admin',
+  },
 };
 
 module.exports = config;

@@ -1,36 +1,46 @@
 const _ = require('lodash');
-const client = require('../../databaseClient');
+const client = require('../../database/databaseClient');
 const config = require('../../utils/config');
-const { getTimeDiff } = require('../../utils/helpers');
+const { getTimeDiff, validateExistence, validateType } = require('../../utils/helpers');
 
 class UserService {
-  getCollection = () => client.db(config.dbName).collection(config.collectionName);
+  getCollection = async () => {
+    const db = await client.getDBConnection(config.dbName);
+    return db.collection(config.collectionName);
+  };
 
   resetLimitQuota = async (key) => {
-    this.getCollection().updateOne({ key }, {
-      $set: {
-        consumedQuota: 0,
-        lastReset: Date.now(),
-      },
-    });
+    await this.getCollection()
+      .then((collection) => collection.updateOne({ key }, {
+        $set: {
+          consumedQuota: 0,
+          lastReset: Date.now(),
+        },
+      }));
   };
 
   setQuotaLimit = async (key, newLimit) => {
-    const { result } = await this.getCollection().updateOne({ key }, {
+    validateType(newLimit, 'number');
+    const data = await this.getCollection().then((collection) => collection.updateOne({ key }, {
       $set: {
         quotaLimit: newLimit,
       },
-    });
-    return _.isEqual(result.nModified, 1);
+    }));
+    validateExistence(data);
+    return _.isEqual(data.result.ok, 1);
   };
 
   getQuotaLimit = async (key) => {
-    const { quotaLimit } = await this.getCollection().findOne({ key });
-    return quotaLimit;
+    const data = await this.getCollection()
+      .then((collection) => collection.findOne({ key }));
+    validateExistence(data);
+    return data.quotaLimit;
   };
 
   getAvailableQuota = async (key) => {
-    const data = await this.getCollection().findOne({ key });
+    const data = await this.getCollection()
+      .then((collection) => collection.findOne({ key }));
+    validateExistence(data);
     const { quotaLimit, consumedQuota, lastReset } = data;
     const timeDiff = getTimeDiff(Date.now(), lastReset);
     if (timeDiff >= 1) {
@@ -42,12 +52,15 @@ class UserService {
   };
 
   consumeQuota = async (key, consumed) => {
-    const { result } = await this.getCollection().updateOne({ key }, {
-      $inc: {
-        consumedQuota: consumed,
-      },
-    });
-    return _.isEqual(result.nModified, 1);
+    validateType(consumed, 'number');
+    const data = await this.getCollection()
+      .then((collection) => collection.updateOne({ key }, {
+        $inc: {
+          consumedQuota: consumed,
+        },
+      }));
+    validateExistence(data);
+    return _.isEqual(data.result.ok, 1);
   };
 }
 
