@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-env mocha */
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
@@ -61,9 +61,10 @@ describe('credit-status single', () => {
     });
 
     it('should not get credit status for non existent CUIT', (done) => {
-      const id = -1;
+      const id = 11111111121;
       chai.request(app)
         .get(`/credit-status/${id}`)
+        .set('Authorization', `bearer ${valid_token}`)
         .end((err, res) => {
           res.should.have.status(404);
           done();
@@ -111,7 +112,6 @@ describe('credit-status multiple', () => {
     });
 
     it('should not get credit status with exhausted api key', (done) => {
-      const token = 'limit0';
       chai.request(app)
         .post(`/credit-status/multiple-query`)
         .set('Authorization', `bearer ${exhausted_token}`)
@@ -143,7 +143,7 @@ describe('credit-status multiple', () => {
     });
 
     it('should get 404 for credit status for non existant CUITs', (done) => {
-      const ids = [ -1, -2 ];
+      const ids = [ 11111111121, 11111111123 ];
       chai.request(app)
         .post(`/credit-status/multiple-query`)
         .set('Authorization', `bearer ${valid_token}`)
