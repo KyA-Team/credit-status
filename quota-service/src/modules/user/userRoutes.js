@@ -2,18 +2,31 @@ const express = require('express');
 
 const router = express.Router();
 const userController = require('./userController');
+const authController = require('../auth/authController');
 
 router
   .route('/available-quota/:key')
-  .get(userController.getAvailableQuota);
+  .get(
+    authController.validateCredentials,
+    userController.getAvailableQuota,
+  );
 
 router
   .route('/quota-limit/:key')
-  .get(userController.getQuotaLimit)
-  .put(userController.setQuotaLimit);
+  .get(
+    authController.validateCredentials,
+    userController.getQuotaLimit,
+  )
+  .put(
+    authController.validateCredentials,
+    userController.setQuotaLimit,
+  );
 
 router
   .route('/consume-quota/:key')
-  .put(userController.consumeCuota);
+  .put(
+    authController.validateCredentials,
+    userController.consumeQuota
+  );
 
 module.exports = router;
