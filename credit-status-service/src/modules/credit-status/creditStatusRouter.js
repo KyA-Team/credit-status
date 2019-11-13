@@ -7,7 +7,7 @@ const router = express.Router();
 router
   .route('/credit-status/multiple-query')
   .get((req, res) => res.status(400).send('You should be using POST'))
-  .post(authentication.parseKey, creditStatusController.multipleQuery);
+  .post(authentication.validateKey, creditStatusController.multipleQuery);
 
 router
   .route('/credit-status')
@@ -15,6 +15,6 @@ router
 
 router
   .route('/credit-status/:id(\\d+)')
-  .get(authentication.parseKey, creditStatusController.singleQuery);
+  .get(authentication.validateKey, creditStatusController.singleQuery);
 
 module.exports = router;

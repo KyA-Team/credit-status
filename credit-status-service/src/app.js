@@ -4,7 +4,7 @@ const creditStatusRouter = require('./modules/credit-status/creditStatusRouter')
 
 const app = express();
 
-app.use(bodyParser.json());
+app.use((req, res, next) => bodyParser.json()(req, res, () => next()));
 
 app.get('/', (req, res) => res.send('Nothing goes here'));
 

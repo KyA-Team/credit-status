@@ -1,6 +1,6 @@
 const userAPI = require('./userAPI');
 
-const parseKey = function (req, res, next) {
+const validateKey = function (req, res, next) {
   if (!req.headers.authorization) {
     return res
       .status(401)
@@ -26,4 +26,4 @@ const hasQuota = async function (requiredQuota, res) {
 };
 
 
-module.exports = { parseKey, hasQuota };
+module.exports = { validateKey, hasQuota };

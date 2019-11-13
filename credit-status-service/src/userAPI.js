@@ -9,9 +9,30 @@ const getAvailableQuota = async (key) => {
   const options = {
     uri,
     json: true,
+    headers: {
+      Authorization: config.quotaService.adminKey,
+    },
   };
   const response = await rq.get(options);
   return response.availableQuota || 0;
 };
 
-module.exports = { getAvailableQuota };
+const consumeQuota = async (key, amount) => {
+  const { host } = config.quotaService;
+  const { port } = config.quotaService;
+  const uri = `http://${host}:${port}/api/consume-quota/${key}`;
+  const options = {
+    uri,
+    json: true,
+    body: {
+      consumed: amount,
+    },
+    headers: {
+      Authorization: '00000',
+    },
+  };
+  const response = await rq.put(options);
+  return response.availableQuota || 0;
+};
+
+module.exports = { getAvailableQuota, consumeQuota };

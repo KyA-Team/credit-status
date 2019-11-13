@@ -1,21 +1,21 @@
 const dbClient = require('../../database/databaseClient');
 const config = require('../../config');
 
-async function findDocumentByIDs(client, ids) {
+const findDocumentsByIDs = async (ids) => {
   const db = await dbClient.getDBConnection(config.dbName);
-  // Get the documents collection
   const collection = db.collection(config.collectionName);
-  // Find some documents
   return collection.find({
     _id: {
       $in: ids,
     },
   }).toArray();
-}
+};
 
-function getCreditStatus(cuils) {
+const getCreditStatus = async (cuils) => {
   const ids = cuils.map((numStr) => parseInt(numStr));
-  return findDocumentByIDs(dbClient, ids);
+  const docs = await findDocumentsByIDs(ids);
+  // eslint-disable-next-line no-underscore-dangle
+  return docs.map((doc) => ({ cuit: doc._id, creditStatus: doc.creditStatus }));
 }
 
 module.exports = { getCreditStatus };
